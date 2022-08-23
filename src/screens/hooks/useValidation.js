@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const useSignupValidation = (initialErrorMessages) => {
+export const useValidation = (initialErrorMessages) => {
   const [errorMessages, setErrorMessages] = useState(initialErrorMessages);
 
   const handleValidation = (errors) => {

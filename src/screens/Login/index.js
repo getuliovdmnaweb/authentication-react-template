@@ -10,8 +10,9 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useSignupValidation } from "../hooks";
+import { useValidation } from "../hooks";
 import { loginSchema } from "../../validation";
+import { ROUTES } from "../../router/routes";
 
 const initialErrorMessages = {
   email: "",
@@ -22,7 +23,7 @@ const theme = createTheme();
 
 export default function SignIn() {
   const { errorMessages, handleValidation, resetErrorMessages } =
-    useSignupValidation(initialErrorMessages);
+    useValidation(initialErrorMessages);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -103,7 +104,7 @@ export default function SignIn() {
             </Button>
             <Grid container>
               <Grid item>
-                <Link href="/signup" variant="body2">
+                <Link href={ROUTES.SIGNUP} variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
