@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useContext } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -13,6 +13,9 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { signupSchema } from "../../validation";
 import { useValidation } from "../hooks";
 import { ROUTES } from "../../router/routes";
+import { useSignupMutation } from "../../store/auth";
+import { SnackContext } from "../../providers/SnackProvider";
+import { useNavigate } from "react-router-dom";
 
 const theme = createTheme();
 
@@ -24,6 +27,9 @@ const initialErrorMessages = {
 };
 
 export default function SignUp() {
+  const { handleOpenSnack } = useContext(SnackContext);
+  const navigate = useNavigate();
+  const [signup] = useSignupMutation();
   const { errorMessages, handleValidation, resetErrorMessages } =
     useValidation(initialErrorMessages);
 
@@ -31,8 +37,7 @@ export default function SignUp() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const unvalidatedUser = {
-      firstName: data.get("firstName"),
-      lastName: data.get("lastName"),
+      name: data.get("name"),
       email: data.get("email"),
       password: data.get("password"),
     };
@@ -40,8 +45,10 @@ export default function SignUp() {
       const validatedUser = await signupSchema.validate(unvalidatedUser, {
         abortEarly: false,
       });
-      console.log(validatedUser);
+      await signup(validatedUser);
+      handleOpenSnack("User Successfully signed up!", "success");
       resetErrorMessages();
+      navigate(ROUTES.LOGIN);
     } catch ({ errors }) {
       handleValidation(errors);
     }
@@ -72,30 +79,17 @@ export default function SignUp() {
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={12}>
                 <TextField
                   autoComplete="given-name"
-                  name="firstName"
+                  name="name"
                   required
                   fullWidth
-                  id="firstName"
-                  label="First Name"
+                  id="name"
+                  label="Full Name"
                   autoFocus
-                  error={!!errorMessages.firstName}
-                  helperText={errorMessages.firstName}
-                  onChange={resetErrorMessages}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="family-name"
-                  error={!!errorMessages.lastName}
-                  helperText={errorMessages.lastName}
+                  error={!!errorMessages.name}
+                  helperText={errorMessages.name}
                   onChange={resetErrorMessages}
                 />
               </Grid>
