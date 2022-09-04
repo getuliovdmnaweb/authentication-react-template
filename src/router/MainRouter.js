@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { LoginScreen, SignupScreen } from "../screens";
 import PrivateRoute from "./PrivateRoute";
 import { ROUTES } from "./routes";
+import { USER_ROLES } from "./UserRoles";
 
 export default function MainRouter() {
   return (
@@ -14,7 +15,7 @@ export default function MainRouter() {
           <Route
             path={ROUTES.HOME}
             element={
-              <PrivateRoute>
+              <PrivateRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.USER]}>
                 <Home />
               </PrivateRoute>
             }

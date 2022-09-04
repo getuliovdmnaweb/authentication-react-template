@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useContext } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -13,6 +13,10 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useValidation } from "../hooks";
 import { loginSchema } from "../../validation";
 import { ROUTES } from "../../router/routes";
+import { useLoginMutation } from "../../store/auth";
+import { SnackContext } from "../../providers/SnackProvider";
+
+import { useNavigate } from "react-router-dom";
 
 const initialErrorMessages = {
   email: "",
@@ -22,6 +26,9 @@ const initialErrorMessages = {
 const theme = createTheme();
 
 export default function SignIn() {
+  const navigate = useNavigate();
+  const { handleOpenSnack } = useContext(SnackContext);
+  const [login] = useLoginMutation();
   const { errorMessages, handleValidation, resetErrorMessages } =
     useValidation(initialErrorMessages);
 
@@ -38,9 +45,16 @@ export default function SignIn() {
         abortEarly: false,
       });
       resetErrorMessages();
-      console.log(validatedUser);
-    } catch ({ errors }) {
-      handleValidation(errors);
+
+      const response = await login(validatedUser).unwrap();
+      handleOpenSnack(response.message, "success");
+      navigate(ROUTES.HOME);
+    } catch (error) {
+      if (error.status === 400) {
+        handleOpenSnack(error.data.message, "error");
+      } else if (error.errors) {
+        handleValidation(error.errors);
+      }
     }
   };
 
